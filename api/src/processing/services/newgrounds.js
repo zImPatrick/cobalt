@@ -1,16 +1,95 @@
 import { genericUserAgent } from "../../config.js";
+import crypto from "node:crypto";
+
+const solveGuard = async () => {
+    const countLeadingZeros = (buffer) => {
+        let count = 0;
+        for (const b of buffer) {
+            if (b == 0) {
+                count += 8;
+            } else {
+                count += Math.clz32(b) - 24;
+                break;
+            }
+        }
+
+        return count;
+    }
+    const json = await fetch("https://www.newgrounds.com/_guard/v1/challenge", {
+        headers: {
+            "User-Agent": genericUserAgent,
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    }).then(r => r.json());
+
+    const { payload, sig, bits } = json;
+
+    const challenge = Buffer.from(payload, "base64");
+    const workingBuffer = Buffer.alloc(challenge.length + 20 + 1);
+    challenge.copy(workingBuffer, 0);
+    Buffer.from(":", "utf-8").copy(workingBuffer, challenge.length);
+
+    let nonce;
+    for (let i = 0; true; i++) {
+        const encodedNum = Buffer.from(i.toString(), "utf-8");
+        workingBuffer.set(encodedNum, challenge.length + 1);
+
+        const sha = crypto.hash("SHA-256", workingBuffer.subarray(0, challenge.length + 1 + encodedNum.length), "buffer");
+        if (countLeadingZeros(sha) >= bits) {
+            nonce = i;
+            break;
+        }
+    }
+
+    const verifyResponse = await fetch("https://www.newgrounds.com/_guard/v1/verify", {
+        headers: {
+            "User-Agent": genericUserAgent,
+            "X-Requested-With": "XMLHttpRequest",
+            "Content-Type": "application/json"
+        },
+        method: "POST",
+        body: JSON.stringify({
+            bits,
+            nonce,
+            payload,
+            sig,
+            demo: false
+        })
+    }).then(r => r.json());
+
+    if (!verifyResponse.ok) {
+        throw new Error("couldn't pass PoW check");
+    }
+}
 
 const getVideo = async ({ id, quality }) => {
-    const json = await fetch(`https://www.newgrounds.com/portal/video/${id}`, {
+    const text = await fetch(`https://www.newgrounds.com/portal/video/${id}`, {
         headers: {
             "User-Agent": genericUserAgent,
             "X-Requested-With": "XMLHttpRequest", // required to get the JSON response
         }
-    })
-    .then(r => r.json())
-    .catch(() => {});
+    }).then(r => r.text()).catch(() => {});
 
-    if (!json) return { error: "fetch.empty" };
+    if (!text) {
+        return { error: "fetch.fail" };
+    }
+
+    if (text.includes("<title>NG Guard</title>")) {
+        try {
+            await solveGuard();
+        } catch {
+            return { error: "fetch.fail" };
+        }
+
+        return await getVideo({ id, quality });
+    }
+
+    let json;
+    try {
+        json = JSON.parse(text);
+    } catch {
+        return { error: "fetch.empty" };
+    }
 
     const videoSources = json.sources;
     const videoQualities = Object.keys(videoSources);
@@ -59,6 +138,11 @@ const getMusic = async ({ id }) => {
     .catch(() => {});
 
     if (!html) return { error: "fetch.fail" };
+    
+    if (html?.includes("<title>NG Guard</title>")) {
+        await solveGuard();
+        return await getMusic({ id });
+    }
 
     const params = JSON.parse(
         `{${html.split(',"params":{')[1]?.split(',"images":')[0]}}`
