@@ -50,7 +50,7 @@ const solveGuard = async () => {
         method: "POST",
         body: JSON.stringify({
             bits,
-            nonce,
+            nonce: nonce.toString(),
             payload,
             sig,
             demo: false
