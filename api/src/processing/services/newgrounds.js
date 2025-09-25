@@ -15,7 +15,7 @@ const solveGuard = async () => {
 
         return count;
     }
-    const json = await fetch("https://www.newgrounds.com/_guard/v1/challenge", {
+    const json = await fetch("https://www.newgrounds.com/_guard/api/v1/challenge", {
         headers: {
             "User-Agent": genericUserAgent,
             "X-Requested-With": "XMLHttpRequest"
@@ -41,7 +41,7 @@ const solveGuard = async () => {
         }
     }
 
-    const verifyResponse = await fetch("https://www.newgrounds.com/_guard/v1/verify", {
+    const verifyResponse = await fetch("https://www.newgrounds.com/_guard/api/v1/verify", {
         headers: {
             "User-Agent": genericUserAgent,
             "X-Requested-With": "XMLHttpRequest",
