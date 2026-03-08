@@ -7,7 +7,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
   # Change these two environment variables
-  WEB_DEFAULT_API: "https://pizza.br0k3.me"
+  WEB_DEFAULT_API: "https://lb.cobalt.br0k3.me"
   WEB_HOST: "https://cobalt.br0k3.me"
 
 jobs:
