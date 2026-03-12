@@ -42,7 +42,7 @@
         "undici": "^6.21.3",
         "url-pattern": "1.0.3",
         "youtubei": "^1.8.4",
-        "youtubei.js": "github:br0k3x/YouTube.js",
+        "youtubei.js": "github:br0k3x/YouTube.js#748095a",
         "zod": "^3.23.8"
     },
     "optionalDependencies": {
