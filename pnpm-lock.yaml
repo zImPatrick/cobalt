@@ -72,8 +72,8 @@ importers:
         specifier: ^1.8.4
         version: 1.8.5
       youtubei.js:
-        specifier: github:br0k3x/YouTube.js
-        version: https://codeload.github.com/br0k3x/YouTube.js/tar.gz/748095aff4dc9e08bf81310ed497b106e5e3e50c
+        specifier: github:br0k3x/YouTube.js#748095a
+        version: https://codeload.github.com/br0k3x/YouTube.js/tar.gz/748095a
       zod:
         specifier: ^3.23.8
         version: 3.25.76
@@ -2434,8 +2434,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  youtubei.js@https://codeload.github.com/br0k3x/YouTube.js/tar.gz/748095aff4dc9e08bf81310ed497b106e5e3e50c:
-    resolution: {tarball: https://codeload.github.com/br0k3x/YouTube.js/tar.gz/748095aff4dc9e08bf81310ed497b106e5e3e50c}
+  youtubei.js@https://codeload.github.com/br0k3x/YouTube.js/tar.gz/748095a:
+    resolution: {tarball: https://codeload.github.com/br0k3x/YouTube.js/tar.gz/748095a}
     version: 16.0.1
 
   youtubei@1.8.5:
@@ -4542,7 +4542,7 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  youtubei.js@https://codeload.github.com/br0k3x/YouTube.js/tar.gz/748095aff4dc9e08bf81310ed497b106e5e3e50c:
+  youtubei.js@https://codeload.github.com/br0k3x/YouTube.js/tar.gz/748095a:
     dependencies:
       '@bufbuild/protobuf': 2.11.0
       meriyah: 6.1.4
