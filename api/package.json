@@ -26,6 +26,7 @@
         "@datastructures-js/priority-queue": "^6.3.1",
         "@imput/psl": "^2.0.4",
         "@imput/version-info": "workspace:^",
+        "axios": "^1.13.6",
         "content-disposition-header": "0.6.0",
         "cors": "^2.8.5",
         "dotenv": "^16.0.1",
@@ -41,9 +42,8 @@
         "undici": "^6.21.3",
         "url-pattern": "1.0.3",
         "youtubei": "^1.8.4",
-        "youtubei.js": "github:LuanRT/YouTube.js#21583f7eec0a06b8a7536abfb55942f4ab300e1e",
-        "zod": "^3.23.8",
-        "axios": "^1.13.6"
+        "youtubei.js": "github:br0k3x/YouTube.js",
+        "zod": "^3.23.8"
     },
     "optionalDependencies": {
         "bgutils-js": "^3.2.0",
