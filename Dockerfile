@@ -14,7 +14,8 @@ RUN corepack enable && \
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile
 
-RUN pnpm deploy --filter=@imput/cobalt-api --prod /prod/api && \
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm deploy --filter=@imput/cobalt-api --prod /prod/api && \
     pnpm deploy --filter=@imput/cobalt-web /prod/web
 
 # Build the web app
