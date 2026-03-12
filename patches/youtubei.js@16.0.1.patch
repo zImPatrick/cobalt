@@ -1,0 +1,20 @@
+diff --git a/dist/src/utils/LZW.js b/dist/src/utils/LZW.js
+index 11ac7b9587c14d040d79b4e549cb27a59b818c29..907693df8cc40e605a88c5864e3ad144ae723e3c 100644
+--- a/dist/src/utils/LZW.js
++++ b/dist/src/utils/LZW.js
+@@ -3,6 +3,7 @@
+  * @param input - The data to compress.
+  */
+ export function compress(input) {
++    return input;
+     const output = [];
+     const dictionary = {};
+     for (let i = 0; i < 256; i++) {
+@@ -32,6 +33,7 @@ export function compress(input) {
+  * @param input - The data to be decompressed.
+  */
+ export function decompress(input) {
++    return input;
+     const dictionary = {};
+     const input_data = input.split('');
+     const output = [input_data.shift()];

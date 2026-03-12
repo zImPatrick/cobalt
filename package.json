@@ -3,5 +3,10 @@
     "packageManager": "pnpm@9.6.0",
     "engines": {
         "pnpm": ">=9"
+    },
+    "pnpm": {
+        "patchedDependencies": {
+            "youtubei.js@16.0.1": "patches/youtubei.js@16.0.1.patch"
+        }
     }
 }
