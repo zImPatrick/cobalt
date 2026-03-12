@@ -1,3 +1,4 @@
+import { trackServiceUsage } from "./analytics-client.js";
 import cors from "cors";
 import http from "node:http";
 import ipaddr from "ipaddr.js";
@@ -274,6 +275,12 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
         }
 
         try {
+            // Track service usage for analytics
+            if (parsed.service) {
+                trackServiceUsage(parsed.service);
+            } else if (parsed.host) {
+                trackServiceUsage(parsed.host);
+            }
             const result = await match({
                 host: parsed.host,
                 patternMatch: parsed.patternMatch,
