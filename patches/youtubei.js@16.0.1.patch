@@ -1,0 +1,9 @@
+diff --git a/dist/src/package.json b/dist/src/package.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..40f0d2a940c4017cd33d302b548a5ac17f3f2e50
+--- /dev/null
++++ b/dist/src/package.json
+@@ -0,0 +1,3 @@
++{
++  "version": "16.0.1"
++}
