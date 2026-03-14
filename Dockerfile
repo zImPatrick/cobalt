@@ -9,7 +9,8 @@ WORKDIR /app
 COPY . /app
 
 RUN corepack enable && \
-    apk add --no-cache python3 alpine-sdk
+    apk add --no-cache python3 alpine-sdk && \
+    pnpm config set ignore-scripts true
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile
