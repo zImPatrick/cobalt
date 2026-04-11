@@ -22,7 +22,7 @@ const solveGuard = async () => {
         }
     }).then(r => r.json());
 
-    const { payload, sig, bits } = json;
+    const { payload, sig, bits, algo, params } = json;
 
     const challenge = Buffer.from(payload, "base64");
     const workingBuffer = Buffer.alloc(challenge.length + 20 + 1);
@@ -33,9 +33,26 @@ const solveGuard = async () => {
     for (let i = 0; true; i++) {
         const encodedNum = Buffer.from(i.toString(), "utf-8");
         workingBuffer.set(encodedNum, challenge.length + 1);
+        
+        const resizedBuffer = workingBuffer.subarray(0, challenge.length + 1 + encodedNum.length);
+        
+        let hash;
+        if (algo == "argon2id") {
+            hash = crypto.argon2Sync("argon2id", {
+                memory: params.memorySize,
+                message: resizedBuffer,
+                nonce: new Uint8Array(8),
+                parallelism: params.parallelism,
+                tagLength: params.hashLength,
+                passes: params.iterations,
+            });
+        } else if (algo == "sha256") {
+            hash = crypto.hash("SHA-256", resizedBuffer, "buffer");
+        } else {
+            throw new Error("Invalid algorithm");
+        }
 
-        const sha = crypto.hash("SHA-256", workingBuffer.subarray(0, challenge.length + 1 + encodedNum.length), "buffer");
-        if (countLeadingZeros(sha) >= bits) {
+        if (countLeadingZeros(hash) >= bits) {
             nonce = i;
             break;
         }
@@ -49,8 +66,10 @@ const solveGuard = async () => {
         },
         method: "POST",
         body: JSON.stringify({
+            algo,
             bits,
             nonce: nonce.toString(),
+            params,
             payload,
             sig,
             demo: false
