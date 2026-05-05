@@ -30,7 +30,12 @@ const solveGuard = async () => {
     Buffer.from(":", "utf-8").copy(workingBuffer, challenge.length);
 
     let nonce;
+    const startDate = Date.now();
     for (let i = 0; true; i++) {
+        if (Date.now() > startDate + 30_000) {
+            throw new Error("PoW took too long");
+        }
+
         const encodedNum = Buffer.from(i.toString(), "utf-8");
         workingBuffer.set(encodedNum, challenge.length + 1);
         
@@ -77,7 +82,7 @@ const solveGuard = async () => {
     }).then(r => r.json());
 
     if (!verifyResponse.ok) {
-        throw new Error("couldn't pass PoW check");
+        throw new Error("Unable to pass PoW check");
     }
 }
 
@@ -99,7 +104,7 @@ const getVideo = async ({ id, quality }) => {
         } catch {
             return { error: "fetch.fail" };
         }
-
+        
         return await getVideo({ id, quality });
     }
 
@@ -159,7 +164,12 @@ const getMusic = async ({ id }) => {
     if (!html) return { error: "fetch.fail" };
     
     if (html?.includes("<title>NG Guard</title>")) {
-        await solveGuard();
+        try {
+            await solveGuard();
+        } catch {
+            return { error: "fetch.fail" };
+        }
+        
         return await getMusic({ id });
     }
 
