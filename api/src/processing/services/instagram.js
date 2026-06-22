@@ -149,6 +149,16 @@ export default function instagram(obj) {
         if (!embedData || !embedData?.contextJSON) return false;
 
         embedData = JSON.parse(embedData.contextJSON);
+        
+        // hack: check if its a video & there's no url so we can
+        // retry the graphql request. didn't find a better spot for this
+        // atm so doing it here
+        if (
+            embedData?.gql_data?.shortcode_media?.is_video
+            && !embedData?.gql_data?.shortcode_media?.video_url
+        ) {
+            return null;
+        }
 
         return embedData;
     }
@@ -240,10 +250,15 @@ export default function instagram(obj) {
             }).toString()
         });
 
+        const json = await req.json()
+            .catch(() => null);
+        
+        if (json?.require_login) {
+            throw "ratelimited";
+        }
+
         return {
-            gql_data: await req.json()
-                        .then(r => r.data)
-                        .catch(() => null)
+            gql_data: json?.data,
         };
     }
 
@@ -419,7 +434,7 @@ export default function instagram(obj) {
         const hasData = (data) => data
                                     && data.gql_data != null
                                     && (data?.gql_data?.xdt_shortcode_media != null || data?.gql_data?.shortcode_media != null);
-        let data, result;
+        let data, result, gqlRatelimited = false;
         try {
             const cookie = getCookie('instagram');
 
@@ -435,12 +450,12 @@ export default function instagram(obj) {
             if (media_id && token) data = await requestMobileApi(media_id, { token });
 
             // mobile api (no cookie, cookie)
-            if (media_id && !hasData(data)) data = await requestMobileApi(media_id);
+            // if (media_id && !hasData(data)) data = await requestMobileApi(media_id);
             if (media_id && cookie && !hasData(data)) data = await requestMobileApi(media_id, { cookie });
 
             // web app graphql api (no cookie, cookie)
-            if (!hasData(data)) data = await requestGQL(id);
-            if (!hasData(data) && cookie) data = await requestGQL(id, cookie);
+            if (!hasData(data)) data = await requestGQL(id).catch(e => gqlRatelimited = true);
+            if (!hasData(data) && cookie) data = await requestGQL(id, cookie).catch(e => gqlRatelimited = true);
 
             // html embed (no cookie, cookie)
             if (!hasData(data)) data = await requestHTML(id);
@@ -448,7 +463,10 @@ export default function instagram(obj) {
         } catch {}
 
         if (!hasData(data)) {
-            return getErrorContext(id);
+            return {
+                ...(await getErrorContext(id)),
+                retry: gqlRatelimited,
+            };
         }
 
         if (data?.gql_data) {
