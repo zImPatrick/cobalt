@@ -241,12 +241,10 @@ export default function instagram(obj) {
                 fb_api_req_friendly_name: 'PolarisPostActionLoadPostQueryQuery',
                 variables: JSON.stringify({
                     shortcode: id,
-                    fetch_tagged_user_count: null,
-                    hoisted_comment_id: null,
-                    hoisted_reply_id: null
+                    __relay_internal__pv__PolarisAIGMMediaWebLabelEnabledrelayprovider: false,
                 }),
                 server_timestamps: true,
-                doc_id: '8845758582119845'
+                doc_id: '26713194205046842'
             }).toString()
         });
 
@@ -255,6 +253,10 @@ export default function instagram(obj) {
         
         if (json?.require_login) {
             throw "ratelimited";
+        }
+
+        if (json?.data?.xdt_api__v1__media__shortcode__web_info) {
+            return json?.data?.xdt_api__v1__media__shortcode__web_info.items[0];
         }
 
         return {
@@ -432,8 +434,8 @@ export default function instagram(obj) {
 
     async function getPost(id, alwaysProxy) {
         const hasData = (data) => data
-                                    && data.gql_data != null
-                                    && (data?.gql_data?.xdt_shortcode_media != null || data?.gql_data?.shortcode_media != null);
+                                    && (data.gql_data != null || data?.pk)
+                                    && (data?.gql_data?.xdt_shortcode_media != null || data?.gql_data?.shortcode_media != null || data?.pk);
         let data, result, gqlRatelimited = false;
         try {
             const cookie = getCookie('instagram');
