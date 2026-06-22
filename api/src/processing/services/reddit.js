@@ -2,6 +2,31 @@ import { resolveRedirectingURL } from "../url.js";
 import { genericUserAgent, env } from "../../config.js";
 import { getCookie, updateCookieValues } from "../cookie/manager.js";
 
+let anonymousAccessToken;
+async function fetchAnonymousAccessToken({ dispatcher }) {
+    if (anonymousAccessToken && anonymousAccessToken?.expiry < Date.now()) {
+        return anonymousAccessToken?.token;
+    }
+
+    const { access_token, expiry_ts } = await fetch("https://www.reddit.com/auth/v2/oauth/access-token/loid", {
+        method: "POST",
+        body: JSON.stringify({
+            "scopes": ["*", "email", "pii"]
+        }),
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Basic " + btoa("ohXpoqrZYub1kg:")
+        }
+    }).then(r => r.json());
+
+    anonymousAccessToken = {
+        token: access_token,
+        expiry: expiry_ts - 10_000,
+    };
+
+    return anonymousAccessToken?.token;
+}
+
 async function getAccessToken() {
     /* "cookie" in cookiefile needs to contain:
      * client_id, client_secret, refresh_token
@@ -50,7 +75,9 @@ async function getAccessToken() {
 
 export default async function(obj) {
     let params = obj;
-    const accessToken = await getAccessToken();
+    const accessToken = await getAccessToken() ?? await fetchAnonymousAccessToken({
+        dispatcher: obj.dispatcher,
+    });
     const headers = {
         'user-agent': genericUserAgent,
         authorization: accessToken && `Bearer ${accessToken}`,
@@ -77,9 +104,10 @@ export default async function(obj) {
 
     if (accessToken) url.hostname = 'oauth.reddit.com';
 
-    let data = await fetch(
-        url, { headers }
-    ).then(r => r.json()).catch(() => {});
+    let data = await fetch(url, { 
+        headers,
+        dispatcher: obj.dispatcher,
+    }).then(r => r.json()).catch(() => {});
 
     if (!data || !Array.isArray(data)) {
         return { error: "fetch.fail" }
