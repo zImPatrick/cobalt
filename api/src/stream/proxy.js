@@ -21,7 +21,8 @@ export default async function (streamInfo, res) {
         const { body: stream, headers, statusCode } = await request(streamInfo.urls, {
             headers: {
                 ...getHeaders(streamInfo.service),
-                Range: streamInfo.range
+                ...(streamInfo.headers ?? {}),
+                Range: streamInfo.range,
             },
             signal: abortController.signal,
             maxRedirections: 16,

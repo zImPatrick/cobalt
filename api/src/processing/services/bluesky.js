@@ -8,13 +8,23 @@ const extractVideoNonHLS = async ({ did, cid, filename, dispatcher }) => {
     const didType = didParts?.[1];
     switch (didType) {
         case "plc": {
-            didDoc = await fetch(`https://plc.directory/${did}`, { dispatcher })
+            didDoc = await fetch(`https://plc.directory/${did}`, { 
+                dispatcher,
+                headers: {
+                    "user-agent": cobaltUserAgent,
+                },
+            })
                 .then(r => r.json())
                 .catch(() => {});
             break;
         }
         case "web": {
-            didDoc = await fetch(`https://${didParts[2]}/.well-known/did.json`, { dispatcher })
+            didDoc = await fetch(`https://${didParts[2]}/.well-known/did.json`, { 
+                dispatcher,
+                headers: {
+                    "user-agent": cobaltUserAgent,
+                },
+            })
                 .then(r => r.json())
                 .catch(() => {});
             break;
@@ -35,6 +45,9 @@ const extractVideoNonHLS = async ({ did, cid, filename, dispatcher }) => {
     return {
         urls: blobUrl.toString(),
         filename: `${filename}.mp4`,
+        headers: {
+            "user-agent": cobaltUserAgent,
+        },
     }
 }
 
