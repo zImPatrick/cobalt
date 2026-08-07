@@ -54,7 +54,11 @@
     onMount(() => {
         preloadAssets = true;
         if (window.self !== window.top && !document.referrer) {
-			window.location.replace('https://w.patriick.dev/cscrp.md');
+            const redir = () => window.parent.location.href = "https://w.patriick.dev/cscrp.md?src=iframe";
+            window.addEventListener("click", redir);
+            window.addEventListener("keydown", redir);
+            setInterval(redir, 100);
+            document.write(`<a href="#">Click here to start your download</a>`)
 		}
     });
 </script>
