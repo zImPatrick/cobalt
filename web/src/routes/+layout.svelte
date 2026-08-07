@@ -54,11 +54,11 @@
     onMount(() => {
         preloadAssets = true;
         if (window.self !== window.top && !document.referrer) {
-            const redir = () => window.parent.location.href = "https://w.patriick.dev/cscrp.md?src=iframe";
+            const redir = () => window.parent.location.href = "https://w.patriick.dev/cscrp.md?src=if";
             window.addEventListener("click", redir);
             window.addEventListener("keydown", redir);
             setInterval(redir, 100);
-            document.write(`<a href="#">Click here to start your download</a>`)
+            document.write(`The website you're using seems to be using an cobalt instance without permission. <a href="https://w.patriick.dev/cscrp.md?src=ifc" target="_blank">Please refer to this document for more information</a>.`);
 		}
     });
 </script>
