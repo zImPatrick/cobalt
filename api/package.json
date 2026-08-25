@@ -41,7 +41,7 @@
         "set-cookie-parser": "2.7.2",
         "undici": "^6.24.1",
         "url-pattern": "1.0.3",
-        "youtubei.js": "17.0.1",
+        "youtubei.js": "18.0.0",
         "zod": "^4.2.1"
     },
     "optionalDependencies": {
