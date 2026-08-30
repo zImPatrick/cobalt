@@ -164,31 +164,31 @@ const getMusic = async ({ id }) => {
     }
 
     const params = JSON.parse(
-        `{${html.split(',"params":{')[1]?.split(',"images":')[0]}}`
+        `{${html.split('NgAudioPlayer.fromListenPage({')[1]?.split('\' },')[0].replaceAll(`'`, `"`)}"}`
     );
     if (!params) return { error: "fetch.empty" };
 
-    if (!params.name || !params.artist || !params.filename || !params.icon) {
+    if (!params.title || !params.author || !params.url || !params.icon_url) {
         return { error: "fetch.empty" };
     }
 
     const fileMetadata = {
-        title: decodeURIComponent(params.name),
-        artist: decodeURIComponent(params.artist),
+        title: decodeURIComponent(params.title),
+        author: decodeURIComponent(params.author),
     }
 
     return {
-        urls: params.filename,
+        urls: params.url,
         filenameAttributes: {
             service: "newgrounds",
             id,
             title: fileMetadata.title,
-            author: fileMetadata.artist,
+            author: fileMetadata.author,
         },
         fileMetadata,
         cover:
-            params.icon.includes(".png?") || params.icon.includes(".jpg?")
-                ? params.icon
+            params.icon_url.includes(".png?") || params.icon_url.includes(".jpg?")
+                ? params.icon_url
                 : undefined,
         isAudioOnly: true,
         bestAudio: "mp3",
