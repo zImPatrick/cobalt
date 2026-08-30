@@ -37,7 +37,7 @@
     },
     {
         "name": "shared video link",
-        "url": "https://web.facebook.com/share/r/JFZfPVgLkiJQmWrr/",
+        "url": "https://web.facebook.com/share/r/1Bkxd3zf1r/",
         "params": {},
         "expected": {
             "code": 200,

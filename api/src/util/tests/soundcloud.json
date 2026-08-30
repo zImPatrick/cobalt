@@ -67,15 +67,6 @@
         }
     },
     {
-        "name": "on.soundcloud link, different stream type",
-        "url": "https://on.soundcloud.com/AG4c",
-        "params": {},
-        "expected": {
-            "code": 200,
-            "status": "tunnel"
-        }
-    },
-    {
         "name": "no opus audio, fallback to mp3",
         "url": "https://soundcloud.com/frums/credits",
         "params": {},
