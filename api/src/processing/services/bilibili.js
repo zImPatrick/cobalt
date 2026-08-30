@@ -1,7 +1,21 @@
 import { env } from "../../config.js";
 import { resolveRedirectingURL } from "../url.js";
+import { hash } from "node:crypto";
 
 // TO-DO: higher quality downloads (currently requires an account)
+
+let captchaCookie;
+let captchaPromise;
+
+function getHeaders(bvid) {
+    const headers = {
+        "user-agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+    };
+    if (bvid) headers["referer"] = `https://www.bilibili.com/video/${bvid}/`;
+    if (captchaCookie) headers["cookie"] = captchaCookie;
+
+    return headers;
+}
 
 function getBest(content) {
     return content?.filter(v => v.baseUrl || v.url)
@@ -41,33 +55,95 @@ async function fetchStreamDataFromAPI(html) {
     })
 
     const playinfo = await fetch(`https://api.bilibili.com/x/player/wbi/playurl?${params.toString()}`, {
-        headers: {
-            "referer": `https://www.bilibili.com/video/${bvid}/`,
-            "user-agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)"
-        }
+        headers: getHeaders(bvid),
     }).then(r => r.json()).catch(() => {});
     if (!playinfo || playinfo.code !== 0) return;
     
     return playinfo;
 }
 
+function pow(tokenQ, tokenR) {
+    for (let i = 0; i < 5_000_000; i++) {
+        const h = hash("SHA-256", tokenQ + i);
+        if (h == tokenR) {
+            return i;
+        }
+    }
+}
+/**
+ * @param {Response} response
+ */
+async function solveCaptcha(response) {
+    const secTokenCookie = response.headers.getSetCookie()
+        .find(v => v.startsWith("X-BILI-SEC-TOKEN"));
+    
+    if (!secTokenCookie) throw new Error("Unable to find sec token");
+    
+    const cookieParts = secTokenCookie.split("=")?.[1].split(";")[0].split(",");
+    if (cookieParts.length != 2) throw new Error("Unexpected number of parts in sec token");
+
+    const [ cookieChallengeType, jwt ] = cookieParts;
+    // at least I think its some sort of challenge type
+    // their JS also only implements "3"
+    if (cookieChallengeType !== "3") throw new Error(`Unknown challenge type ${cookieChallengeType}`);
+
+    const jwtPayload = JSON.parse(atob(jwt.split(".")[1]));
+
+    const { q, r, type, verity, exp } = jwtPayload;
+    if (verity !== 0) throw new Error(`Unknown token verity ${verity}`);
+    if (type !== "1") throw new Error(`Unknown token type ${type}`);
+
+    const solution = pow(q, r);
+    
+    // submit solution
+    const solutionResponse = await fetch("https://security.bilibili.com/th/captcha/cc/check", {
+        method: "POST",
+        body: new URLSearchParams({
+            token: jwt,
+            result: solution,
+        }).toString(),
+        headers: {
+            ...getHeaders(),
+            "Content-Type": "application/x-www-form-urlencoded",
+        }
+    });
+    if (!solutionResponse.ok) throw new Error(`Error while submitting solution: ${solutionResponse.status}`);
+    
+    const { code, message } = await solutionResponse.json();
+    if (code !== 0) throw new Error(`Invalid code: ${code}`);
+
+    captchaCookie = "X-BILI-SEC-TOKEN=" + message;
+}
+
 async function com_download(id, partId) {
-    const url = new URL(`https://bilibili.com/video/${id}`);
+    const url = new URL(`https://www.bilibili.com/video/${id}/`);
 
     if (partId) {
         url.searchParams.set('p', partId);
     }
 
-    const html = await fetch(url, {
-        headers: {
-            "user-agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
-        }
-    })
-    .then(r => r.text())
-    .catch(() => {});
+    const response = await fetch(url, {
+        headers: getHeaders(id),
+    }).catch(() => {});
+
+    const html = await response?.text().catch(() => {});
 
     if (!html) {
         return { error: "fetch.fail" }
+    }
+    
+    if (response.status == 412) {
+        // we either need to solve their pow or just refresh
+        try {
+            if (captchaPromise) await captchaPromise;
+            else captchaPromise = await solveCaptcha(response);
+        } catch {
+            return { error: "fetch.fail" };
+        } finally {
+            captchaPromise = null;
+        }
+
+        return await com_download(id, partId);
     }
 
     let streamData = extractStreamDataFromHTML(html)
