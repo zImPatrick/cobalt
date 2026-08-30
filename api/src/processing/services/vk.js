@@ -126,7 +126,8 @@ export default async function ({ ownerId, videoId, accessKey, quality, subtitleL
     if (!url) return { error: "fetch.fail" };
 
     const fileMetadata = {
-        title: video.title.trim(),
+        title: video.title?.trim() ?? "",
+        id: `${ownerId}_${videoId}${accessKey ? `_${accessKey}` : ''}`,
     }
 
     let subtitles;
@@ -146,8 +147,8 @@ export default async function ({ ownerId, videoId, accessKey, quality, subtitleL
         fileMetadata,
         filenameAttributes: {
             service: "vk",
-            id: `${ownerId}_${videoId}${accessKey ? `_${accessKey}` : ''}`,
-            title: fileMetadata.title,
+            id: fileMetadata.id,
+            title: fileMetadata.title || fileMetadata.id,
             resolution: `${pickedQuality}p`,
             qualityLabel: `${pickedQuality}p`,
             extension: "mp4"
