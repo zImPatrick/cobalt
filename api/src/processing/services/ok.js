@@ -28,7 +28,7 @@ export default async function(o) {
         return { error: "fetch.empty" };
     }
 
-    videoData = JSON.parse(JSON.parse(videoData).flashvars.metadata);
+    videoData = JSON.parse(videoData).flashvars.metadata;
 
     if (videoData.provider !== "UPLOADED_ODKL")
         return { error: "link.unsupported" };
