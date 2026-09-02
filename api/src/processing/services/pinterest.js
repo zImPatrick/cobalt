@@ -80,7 +80,7 @@ export default async function(o) {
 
     if (!html) return { error: "fetch.fail" };
 
-    const invalidPin = html.match(notFoundRegex);
+    const invalidPin = html.match(notFoundRegex) && html.includes("<title></title>");
 
     if (invalidPin) return { error: "fetch.empty" };
 
