@@ -19,6 +19,10 @@ declare global {
         // interface PageState {}
         // interface Platform {}
     }
+
+    interface Window {
+        plausible?: (event: string, data?: object) => void;
+    }
 }
 
-export {};
+export { };

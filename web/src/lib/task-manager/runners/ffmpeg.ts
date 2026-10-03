@@ -67,6 +67,13 @@ export const runFFmpegWorker = async (
         console.error("ffmpeg worker crashed:", e);
         killWorker(worker, unsubscribe, startCheck);
 
+        window.plausible?.("worker_error", {
+            props: {
+                error: `${variant}/generic`,
+                variant,
+            },
+            interactive: false,
+        });
         return itemError(parentId, workerId, "queue.generic_error");
     };
 
@@ -100,6 +107,12 @@ export const runFFmpegWorker = async (
 
         if (eventData.error) {
             killWorker(worker, unsubscribe, startCheck);
+            window.plausible?.("worker_error", {
+                props: {
+                    error: eventData.error,
+                    variant,
+                }
+            });
             return itemError(parentId, workerId, eventData.error);
         }
     };
