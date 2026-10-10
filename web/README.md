@@ -18,6 +18,7 @@ them, you must specify them when building the frontend (or running a vite server
 | `WEB_PLAUSIBLE_HOST`            | `plausible.io`*             | enables plausible analytics with provided hostname as receiver backend.                                 |
 | `WEB_DEFAULT_API`               | `https://api.cobalt.tools/` | changes url which is used for api requests by frontend clients.                                         |
 | `ENABLE_DEPRECATED_YOUTUBE_HLS` | `true`                      | enables the youtube HLS settings entry; allows sending the related variable to the processing instance. |
+| `WEB_DONATION_INFO`             | `<i>example.com/donate</i>` | allows instance maintainers to add some of their own info to the donation page. supports html.          |
 
 \* don't use plausible.io as receiver backend unless you paid for their cloud service.
    use your own domain when hosting community edition of plausible. refer to their [docs](https://plausible.io/docs) when needed.

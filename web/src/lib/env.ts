@@ -21,6 +21,7 @@ const variables = {
     DEFAULT_API: getEnv('DEFAULT_API'),
     ENABLE_WEBCODECS: getEnvBool('ENABLE_WEBCODECS'),
     ENABLE_DEPRECATED_YOUTUBE_HLS: getEnvBool('ENABLE_DEPRECATED_YOUTUBE_HLS'),
+    DONATION_INFO: getEnv("DONATION_INFO"),
 }
 
 const contacts = {

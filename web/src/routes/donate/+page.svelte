@@ -1,7 +1,7 @@
 <script lang="ts">
     import "@fontsource/redaction-10/400.css";
 
-    import { donate } from "$lib/env";
+    import variables, { donate } from "$lib/env";
     import { t } from "$lib/i18n/translations";
 
     import DonateBanner from "$components/donate/DonateBanner.svelte";
@@ -24,6 +24,16 @@
 
 <div id="donate-page-wrapper">
     <main id="donate-page">
+        {#if variables.DONATION_INFO}
+            <h1>Donate to this instance</h1>
+            <section class="long-text">
+                <!-- Yes, this sucks but I'm not going to add a markdown parser or something for this -->
+                {@html variables.DONATION_INFO}
+            </section>
+            
+            <h1>Donate to imput</h1>
+            <i>the original creators and maintainers of cobalt</i>
+        {/if}
         <DonateBanner />
 
         <section id="support-options">
