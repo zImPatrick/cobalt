@@ -4,6 +4,7 @@ import { queue, itemError } from "$lib/state/task-manager/queue";
 
 import { runFFmpegWorker } from "$lib/task-manager/runners/ffmpeg";
 import { runFetchWorker } from "$lib/task-manager/runners/fetch";
+import { runRestampWorker } from "$lib/task-manager/runners/restamp";
 
 import type { CobaltPipelineItem } from "$lib/types/workers";
 
@@ -55,5 +56,28 @@ export const startWorker = async ({ worker, workerId, dependsOn, parentId, worke
         case "fetch":
             await runFetchWorker(workerId, parentId, workerArgs.url);
             break;
+
+        case "restamp": {
+            files.push(...workerArgs.files);
+
+            const parent = get(queue)[parentId];
+            if (parent?.state === "running" && dependsOn) {
+                for (const dependencyId of dependsOn) {
+                    const file = parent.pipelineResults[dependencyId];
+                    if (!file) {
+                        return itemError(parentId, workerId, "queue.restamp.no_file");
+                    }
+
+                    files.push(file);
+                }
+            }
+
+            if (files.length === 1) {
+                await runRestampWorker(workerId, parentId, files[0]);
+            } else {
+                itemError(parentId, workerId, "queue.restamp.no_file");
+            }
+            break;
+        }
     }
 }
