@@ -9,8 +9,26 @@
         }
     },
     {
+        "name": "spotlight (from profile)",
+        "url": "https://www.snapchat.com/@cantonfair23/spotlight/W7_EDlXWTBiXAEEniNoMPwAAYbGZ1aWJ3eGRhAZnG0eo9AZnG0enDAAAAAQ",
+        "params": {},
+        "expected": {
+            "code": 200,
+            "status": "redirect"
+        }
+    },
+    {
         "name": "story",
         "url": "https://www.snapchat.com/add/cantonfair23",
+        "params": {},
+        "expected": {
+            "code": 200,
+            "status": "picker"
+        }
+    },
+    {
+        "name": "story (new url)",
+        "url": "https://www.snapchat.com/@cantonfair23",
         "params": {},
         "expected": {
             "code": 200,
