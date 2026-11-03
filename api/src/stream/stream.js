@@ -23,6 +23,9 @@ export default async function(res, streamInfo) {
 
             case "gif":
                 return await ffmpeg.convertGif(streamInfo, res);
+            
+            case "hls-remux":
+                return await ffmpeg.hlsRemux(streamInfo, res);
         }
 
         closeResponse(res);

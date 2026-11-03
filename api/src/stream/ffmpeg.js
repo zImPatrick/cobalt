@@ -235,8 +235,24 @@ const convertGif = async (streamInfo, res) => {
     );
 }
 
+const hlsRemux = async (streamInfo, res) => {
+    const args = [
+        '-i', streamInfo.urls,
+
+        '-c:v', 'copy',
+        '-c:a', 'copy',
+        '-c:s', 'copy',
+
+        '-movflags', 'faststart+frag_keyframe+empty_moov',
+        '-f', 'matroska', 'pipe:3',
+    ];
+
+    await render(res, streamInfo, args);
+}
+
 export default {
     remux,
     convertAudio,
     convertGif,
+    hlsRemux,
 }
