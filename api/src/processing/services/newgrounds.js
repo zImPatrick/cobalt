@@ -174,7 +174,7 @@ const getMusic = async ({ id }) => {
 
     const fileMetadata = {
         title: decodeURIComponent(params.title),
-        author: decodeURIComponent(params.author),
+        artist: decodeURIComponent(params.author),
     }
 
     return {
@@ -183,7 +183,7 @@ const getMusic = async ({ id }) => {
             service: "newgrounds",
             id,
             title: fileMetadata.title,
-            author: fileMetadata.author,
+            author: fileMetadata.artist,
         },
         fileMetadata,
         cover:
