@@ -9,8 +9,10 @@
     "state.starting.fetch": "starting downloading",
     "state.starting.remux": "starting remuxing",
     "state.starting.encode": "starting transcoding",
+    "state.starting.restamp": "checking timestamps",
 
     "state.running.remux": "remuxing",
     "state.running.fetch": "downloading",
-    "state.running.encode": "transcoding"
+    "state.running.encode": "transcoding",
+    "state.running.restamp": "fixing timestamps"
 }

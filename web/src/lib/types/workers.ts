@@ -38,6 +38,12 @@ type CobaltFetchPipelineItem = CobaltPipelineItemBase & {
     workerArgs: { url: string },
 }
 
+type CobaltRestampPipelineItem = CobaltPipelineItemBase & {
+    worker: "restamp",
+    workerArgs: { files: File[] },
+}
+
 export type CobaltPipelineItem = CobaltEncodePipelineItem
                                | CobaltRemuxPipelineItem
-                               | CobaltFetchPipelineItem;
+                               | CobaltFetchPipelineItem
+                               | CobaltRestampPipelineItem;

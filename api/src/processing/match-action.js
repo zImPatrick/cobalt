@@ -265,7 +265,15 @@ export default function({
         const isPreferredWithExtra =
             localProcessing === "preferred" && extraProcessingTypes.has(params.type);
 
-        if (localProcessing === "forced" || isPreferredWithExtra) {
+        // some tiktok videos have stretched timestamps, which the web client
+        // fixes locally. merges & remuxes are already local when preferred, and
+        // proxied files go through the same tunnel either way, so this doesn't
+        // add any load to the instance
+        const isPreferredTikTokProxy =
+            localProcessing === "preferred" && host === "tiktok"
+            && action === "video" && params.type === "proxy";
+
+        if (localProcessing === "forced" || isPreferredWithExtra || isPreferredTikTokProxy) {
             responseType = "local-processing";
         }
     }

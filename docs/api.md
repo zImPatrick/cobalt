@@ -114,12 +114,14 @@ the response will always be a JSON object containing the `status` key, which is 
 | key          | type       | value                                                         |
 |:-------------|:-----------|:--------------------------------------------------------------|
 | `status`     | `string`   | `local-processing`                                            |
-| `type`       | `string`   | `merge`, `mute`, `audio`, `gif`, or `remux`                   |
+| `type`       | `string`   | `merge`, `mute`, `audio`, `gif`, `remux`, or `proxy`          |
 | `service`    | `string`   | origin service (`youtube`, `twitter`, `instagram`, etc)       |
 | `tunnel`     | `string[]` | array of tunnel URLs                                          |
 | `output`     | `object`   | details about the output file ([see below](#output-object))   |
 | `audio`      | `object`   | audio-specific details (optional, [see below](#audio-object)) |
 | `isHLS`      | `boolean`  | whether the output is in HLS format (optional)                |
+
+`proxy` means that the file doesn't need any remuxing, so you can just save it from the tunnel. the client may still post-process it (e.g. cobalt's web app fixes stretched timestamps in some tiktok videos).
 
 #### output object
 | key         | type      | value                                                                             |

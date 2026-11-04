@@ -6,11 +6,24 @@ import { clearCurrentTasks, removeWorkerFromQueue } from "$lib/state/task-manage
 
 import type { CobaltQueue, CobaltQueueItem, CobaltQueueItemRunning, UUID } from "$lib/types/queue";
 
-const clearPipelineCache = (queueItem: CobaltQueueItem) => {
+const clearPipelineCache = (queueItem: CobaltQueueItem, resultFile?: File) => {
     if (queueItem.state === "running") {
+        const names = new Set<string>();
+
         for (const [ workerId, item ] of Object.entries(queueItem.pipelineResults)) {
-            removeFromFileStorage(item.name);
+            names.add(item.name);
             delete queueItem.pipelineResults[workerId];
+        }
+
+        // a worker can pass its input on as its result (e.g. restamp), so the final
+        // file may share its name and storage with an intermediate one. keep that
+        // storage until the finished item itself is removed
+        if (resultFile) {
+            names.delete(resultFile.name);
+        }
+
+        for (const name of names) {
+            removeFromFileStorage(name);
         }
     } else if (queueItem.state === "done") {
         removeFromFileStorage(queueItem.resultFile.name);
@@ -56,7 +69,7 @@ export function itemError(id: UUID, workerId: UUID, error: string) {
 export function itemDone(id: UUID, file: File) {
     update(queueData => {
         if (queueData[id]) {
-            queueData[id] = clearPipelineCache(queueData[id]);
+            queueData[id] = clearPipelineCache(queueData[id], file);
 
             queueData[id] = {
                 ...queueData[id],
