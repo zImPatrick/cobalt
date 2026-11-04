@@ -43,6 +43,7 @@ async function findClientID() {
     } catch {}
 }
 
+const qualityOrder = ["hq", "sq", "lq"];
 const findBestForPreset = (transcodings, preset) => {
     let inferior;
     for (const entry of transcodings) {
@@ -56,7 +57,12 @@ const findBestForPreset = (transcodings, preset) => {
             if (protocol === 'progressive') {
                 return entry;
             }
-
+            
+            // skip if we're trying to override the higher quality audio
+            if (inferior && qualityOrder.indexOf(entry?.quality) > qualityOrder.indexOf(inferior.quality)) {
+                continue;
+            }
+            
             inferior = entry;
         }
     }
