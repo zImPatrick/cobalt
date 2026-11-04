@@ -171,9 +171,11 @@ export default async function(obj) {
         copyright: json.license?.trim(),
     }
 
+    const artworkUrl = json.artwork_url ?? json.user.avatar_url;
+
     let cover;
-    if (json.artwork_url) {
-        const coverUrl = json.artwork_url.replace(/-large/, "-t1080x1080");
+    if (artworkUrl) {
+        const coverUrl = artworkUrl.replace(/-large/, "-t1080x1080");
         const testCover = await fetch(coverUrl)
             .then(r => r.status === 200)
             .catch(() => {});
